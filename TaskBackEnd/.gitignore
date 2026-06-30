@@ -1,0 +1,16 @@
+.env
+*.pem
+
+.DS_Store
+
+build/
+*.log
+*.o
+*.out
+*.a
+*.so
+
+compile_commands.json
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
