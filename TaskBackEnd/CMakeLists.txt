@@ -5,5 +5,6 @@ project(TaskBackend)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(backend src/main.cpp)
+add_executable(backend src/main.cpp src/message.cpp src/parser.cpp src/validator.cpp)
 
+target_include_directories(backend PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
