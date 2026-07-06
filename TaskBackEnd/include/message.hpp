@@ -26,15 +26,18 @@ private:
 
 class Reply : public Message {
 public:
-    Reply(int, Type, std::string, int);
+    Reply(int, std::string, int);
     Message::Type get_type() const override;
     nlohmann::json to_json() const override;
+    static std::unique_ptr<Reply> from_json(const nlohmann::json&);
 private:
     int reply_to; // simply the index of the message being replied to
 };
 
 class Error : public Message {
     public:
+    Error(int, std::string);
     Message::Type get_type() const override;
     nlohmann::json to_json() const override;
+    static std::unique_ptr<Error> from_json(const nlohmann::json&);
 };
