@@ -2,23 +2,17 @@
 #include <nlohmann/json.hpp>
 #include "message.hpp"
 #include "parser.hpp"
-#include "validator.hpp"
+#include "json_schema.hpp"
 int main() {
     using json = nlohmann::json;
-    std::string input;
-    std::getline(std::cin, input);
-    
-    //parsing
-    json js;
-    try {
-        js = Parser::parse_string(input);
-    } catch (std::exception& e) {
-        std::cout << e.what() << std::endl;
-    }
-    //validating
-    auto report = Validator::validate(js);
+    using namespace Schema;
+    JsonField field(JsonField::FieldType::Number);
 
-    if (report) {
-        std::cerr << report.value().what() << std::endl;
-    }
+    field.add_restriction(RangeOfValue<int>{0,100});
+    field.add_restriction(SetOfValues<int>{10,20,30});
+    //auto result = field.validate(150);
+    //auto result = field.validate(50);
+    auto result = field.validate(-5);
+
+    std::cout << result.report << std::endl;
 }
