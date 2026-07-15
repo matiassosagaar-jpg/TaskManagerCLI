@@ -64,6 +64,14 @@ private:
     T max;
 };
 // ---------------JsonField---------------
+struct ValidationResult {
+    bool success {true};
+    nlohmann::json report;
+    
+    explicit operator bool() { // Defining conversion from ValidationResult --> boolean
+        return success;
+    }
+};
 class JsonField {
 public:
     enum class FieldType {
@@ -126,17 +134,8 @@ public:
     void add_restriction(const Restriction& res) {
         restrictions.push_back(res.clone());
     }
-
     // ----------------Validation-------------
-    struct ValidationResult {
-        bool success {true};
-        nlohmann::json report;
-        
-        explicit operator bool() { // Defining conversion from ValidationResult --> boolean
-            return success;
-        }
-    };
-    JsonField::FieldType get_field_type(const nlohmann::json& value) {
+    JsonField::FieldType get_field_type(const nlohmann::json& value) const {
         if (value.is_string()) {
             return JsonField::FieldType::String;
         }
@@ -159,7 +158,7 @@ public:
 
         return JsonField::FieldType::None;
     }
-    ValidationResult validate(const nlohmann::json& js) {
+    ValidationResult validate(const nlohmann::json& js) const {
         ValidationResult result;
         result.report["value"] = js;
         result.report["errors"] = nlohmann::json::array();
@@ -190,8 +189,6 @@ void swap(JsonField& js1, JsonField& js2) {
     std::swap(js2.restrictions, js1.restrictions);
     std::swap(js2.field_type, js1.field_type);
 }
-
-
 class JsonSchema {
 public:
     JsonSchema(std::initializer_list<std::pair<const std::string, JsonField>> fields) :
@@ -201,10 +198,18 @@ public:
     void set_field(const std::string& name, JsonField field) {
         fields[name] = std::move(field); // field is passed by value, so we'll use move semantics to not create an additional copy
     }
-
+    ValidationResult validate(const nlohmann::json& js) {
+        ValidationResult result;    
+        result.report["validation_result"] = nlohmann::json::array();
+        for (const auto& field : fields) {
+            auto field_result = field.second.validate(js[field.first]);
+            if (!field_result.success) 
+                result.success = false;
+            result.report["validation_result"].push_back(field_result.report);
+        }
+        return result;
+    }
 private:
     std::unordered_map<std::string, JsonField> fields;
 };
-
-
 } // namespace Schema
