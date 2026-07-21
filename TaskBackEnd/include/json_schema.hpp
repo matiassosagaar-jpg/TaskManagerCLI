@@ -63,15 +63,47 @@ private:
     T min;
     T max;
 };
-// ---------------JsonField---------------
+// ---------------ValidationReports---------------
 struct ValidationResult {
     bool success {true};
-    nlohmann::json report;
-    
-    explicit operator bool() { // Defining conversion from ValidationResult --> boolean
+    nlohmann::json report {};
+    explicit operator bool() const{ // Defining conversion from ValidationResult --> boolean
         return success;
     }
+    // --------------------Incomplete Method(add)------------------
+/*     
+    void add(const ValidationResult& val) {
+        if (val.report.is_array())
+            throw std::invalid_argument("Cannot add a collection of errors");
+        if (!report.is_array())
+            throw std::logic_error("Cannot add to Non-Array ValidationResult");
+        success = success && val.success;
+        report.push_back(val.report); // will fail probably if report is not an array
+    } 
+*/
 };
+enum class ValidationErrorType {
+    FieldNotFound,
+    UnexpectedField
+};
+std::string error_string(ValidationErrorType err) {
+    switch (err) {
+    case ValidationErrorType::FieldNotFound:
+        return "field_not_found";
+    case ValidationErrorType::UnexpectedField:
+        return "unexpected_field";
+    }   
+    throw std::invalid_argument("Invalid enum");
+}
+ValidationResult make_error(ValidationErrorType err) {
+    ValidationResult error;
+    error.success = false;
+    error.report["value"] = nullptr;
+    error.report["errors"] = nlohmann::json::array();
+    error.report["errors"].push_back({{"type", error_string(err)}});
+    return error;
+}
+//---------------JsonField--------------
 class JsonField {
 public:
     enum class FieldType {
@@ -103,6 +135,7 @@ public:
     JsonField() = default;
     JsonField(FieldType json_type) : field_type{json_type} {}
     friend void swap(JsonField&, JsonField&);
+    FieldType get_field_type() const {return field_type;}
     // ---------------Copy Semantics---------------
 
     JsonField(const JsonField& json_field) {
@@ -135,7 +168,7 @@ public:
         restrictions.push_back(res.clone());
     }
     // ----------------Validation-------------
-    JsonField::FieldType get_field_type(const nlohmann::json& value) const {
+    static JsonField::FieldType get_field_type(const nlohmann::json& value) {
         if (value.is_string()) {
             return JsonField::FieldType::String;
         }
@@ -189,6 +222,7 @@ void swap(JsonField& js1, JsonField& js2) {
     std::swap(js2.restrictions, js1.restrictions);
     std::swap(js2.field_type, js1.field_type);
 }
+
 class JsonSchema {
 public:
     JsonSchema(std::initializer_list<std::pair<const std::string, JsonField>> fields) :
@@ -202,14 +236,32 @@ public:
         ValidationResult result;    
         result.report["validation_result"] = nlohmann::json::array();
         for (const auto& field : fields) {
-            auto field_result = field.second.validate(js[field.first]);
-            if (!field_result.success) 
+            if (js.contains(field.first)) { // Checking if the tested json has the field
+                auto field_result = field.second.validate(js.at(field.first));
+                field_result.report["field_name"] = field.first;
+                if (!field_result.success) 
+                    result.success = false;
+                result.report["validation_result"].push_back(field_result.report);
+            } else {
                 result.success = false;
-            result.report["validation_result"].push_back(field_result.report);
+                auto report = make_error(ValidationErrorType::FieldNotFound).report;
+                report["field_name"] = field.first;
+                result.report["validation_result"].push_back(report);
+            }
+        }
+
+        for (const auto& [key,value] :js.items()) {
+            if (fields.find(key) == fields.end()) {
+                result.success = false;
+                auto report = make_error(ValidationErrorType::UnexpectedField).report;
+                report["field_name"] = key;
+                result.report["validation_result"].push_back(report);
+            }
         }
         return result;
     }
 private:
     std::unordered_map<std::string, JsonField> fields;
+    // ------------Errors-------------------------
 };
 } // namespace Schema
