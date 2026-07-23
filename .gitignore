@@ -9,7 +9,7 @@ build/
 *.out
 *.a
 *.so
-
+/.vscode
 compile_commands.json
 cmake-build-*/
 CMakeCache.txt
