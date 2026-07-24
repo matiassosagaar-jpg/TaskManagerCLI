@@ -4,12 +4,36 @@
 #include "section.hpp"
 #include "task.hpp"
 #include "id_generator.hpp"
-namespace Domain {
+#include <unordered_map>
+#include <algorithm>
+namespace Domain 
+{
 class TaskManager {
 public:
+    TaskManager() = default;
+    // INSERTION/DELETION OF TASKS/SECTIONS
+    TaskID create_task(
+        std::string title,
+        std::string description,
+        Task::Priority priority,
+        OptionalDate deadline,
+        SectionID section
+    );
+    void remove_task(TaskID id);
+    SectionID create_section(std::string name);
+    void remove_section(SectionID id);
+    void remove_section_and_tasks(SectionID id);
+    // BASIC QUERIES
+    Task& get_task(TaskID id) {return tasks.at(id);}
+    const Task& get_task(TaskID id) const {return tasks.at(id);}
+    Section& get_section(SectionID id) {return sections.at(id);}
     //------------Interface--------------
 private:
+    // ID GENERATORS
     IdGenerator<TaskID> task_ids;
     IdGenerator<SectionID> section_ids;
+    // DATA OWNED
+    std::unordered_map<SectionID, Section, IDHash> sections;
+    std::unordered_map<TaskID, Task, IDHash> tasks;
 };
 } // namespace Domain

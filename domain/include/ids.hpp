@@ -1,8 +1,15 @@
 #pragma once
 #include <cstdint>
 #include <compare>
+#include <functional>
 namespace Domain {
-struct TaskID {
+template <typename T>
+concept ID = requires(T id, uint64_t value) {
+    T{value}; // ID is a type that can be built from a uint64_t
+    id.value;
+};
+struct TaskID 
+{
     uint64_t value {};
 
     explicit TaskID(uint64_t v) : value(v) {}
@@ -21,4 +28,11 @@ struct SectionID {
 
     auto operator<=>(const SectionID&) const = default;
 };
+struct IDHash { // I don't know much about how hashes work, so I'll just use the hash form uint64_t
+    template<typename T>
+    size_t operator()(const T& id) const noexcept {
+        return std::hash<uint64_t>{}(id.value);
+    }
+};
 }
+
