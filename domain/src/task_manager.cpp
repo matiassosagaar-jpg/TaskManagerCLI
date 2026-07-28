@@ -5,7 +5,7 @@ namespace Domain
 TaskID TaskManager::create_task(
         std::string title,
         std::string description,
-        Task::Priority priority,
+        Priority priority,
         OptionalDate deadline,
         SectionID section
     ) {
@@ -52,5 +52,35 @@ void TaskManager::remove_section_and_tasks(SectionID id) {
         remove_task(task_id);
     // Now that we no longer need the section data
     sections.erase(id);
+}
+State::ManagerFullReport TaskManager::report_state() const {
+    //una vista de todas las tareas:
+    auto task_reports = 
+        tasks
+        | std::views::values
+        | std::views::transform([](const Task& t) { // could've also used std::views::transform(&Task::report_state) this is, a pointer to the member method
+            return t.report_state();
+            }
+    );
+    auto section_reports =
+        sections
+        | std::views::values
+        | std::views::transform([](const Section& s) {
+            return s.report_state();
+        }
+    );
+    auto task_reports_vec =
+    std::vector<State::TaskReport>(task_reports.begin(), task_reports.end());
+
+    auto section_reports_vec =
+        std::vector<State::SectionReport>(section_reports.begin(), section_reports.end());
+    
+    return {
+        std::move(task_reports_vec),
+        std::move(section_reports_vec),
+        task_ids.report_state(),
+        section_ids.report_state()
+    };
+
 }
 } // namespace Domain

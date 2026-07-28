@@ -12,4 +12,14 @@ Task::Task(
     ) : id{id}, title{title}, description{description},
         priority{priority}, deadline{deadline}, section{section} {}
 
+State::TaskReport Task::report_state() const {
+    return {
+        id,
+        title,
+        description,
+        priority,
+        deadline,
+        section
+    };
+}
 } // namespace Domain

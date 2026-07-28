@@ -1,5 +1,6 @@
 #pragma once
 #include "ids.hpp"
+#include "state_report.hpp"
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -11,6 +12,7 @@ public:
     Section(std::string name, SectionID id);
     void add_task(TaskID task);
     void remove_task(TaskID task);
+    State::SectionReport report_state() const;
     // BASIC QUERIES
     const std::vector<TaskID>& get_tasks() const {return tasks;};
     bool is_empty() const {return tasks.empty();}

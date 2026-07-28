@@ -11,4 +11,12 @@ void Section::add_task(TaskID task) {
 void Section::remove_task(TaskID task) {
     tasks.erase(std::remove(tasks.begin(),tasks.end(), task), tasks.end());
 }
+
+State::SectionReport Section::report_state() const {
+    return {
+        name,
+        id,
+        tasks
+    };
+}
 } // namespace Domain

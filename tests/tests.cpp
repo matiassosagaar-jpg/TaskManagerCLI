@@ -18,7 +18,7 @@ int main()
     TaskID task_id = manager.create_task(
         "Finish backend",
         "Implement persistence layer",
-        Task::Priority::High,
+        Priority::High,
         std::nullopt,
         section_id
     );

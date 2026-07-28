@@ -1,21 +1,17 @@
 #pragma once
+#include "types.hpp"
 #include "ids.hpp"
+#include "state_report.hpp"
 #include <chrono>
 #include <string>
 #include <optional>
+#include <format>
 namespace Domain 
 {
-using Date = std::chrono::year_month_day;
-using OptionalDate = std::optional<Date>;
 class Task {
 public:
     //------------Interface------------
-    enum class Priority {
-        Low,
-        Medium,
-        High,
-        Urgent
-    };
+
     // CONSTRUCTORS
     Task(
         TaskID id,
@@ -27,6 +23,7 @@ public:
     );
     ~Task() = default; // data members already know how free their owned resources
     void set_section(SectionID id) {section = id;}
+    State::TaskReport report_state() const;
     // BASIC QUERIES
     SectionID get_sectionID() const {return section;}
     bool has_section() const {return section!=SectionID{0};}

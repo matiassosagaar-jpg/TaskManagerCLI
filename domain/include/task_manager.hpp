@@ -3,9 +3,11 @@
 #include "ids.hpp"
 #include "section.hpp"
 #include "task.hpp"
+#include "state_report.hpp"
 #include "id_generator.hpp"
 #include <unordered_map>
 #include <algorithm>
+#include <ranges>
 namespace Domain 
 {
 class TaskManager {
@@ -15,7 +17,7 @@ public:
     TaskID create_task(
         std::string title,
         std::string description,
-        Task::Priority priority,
+        Priority priority,
         OptionalDate deadline,
         SectionID section
     );
@@ -27,11 +29,12 @@ public:
     Task& get_task(TaskID id) {return tasks.at(id);}
     const Task& get_task(TaskID id) const {return tasks.at(id);}
     Section& get_section(SectionID id) {return sections.at(id);}
+    State::ManagerFullReport report_state() const;
     //------------Interface--------------
 private:
     // ID GENERATORS
-    IdGenerator<TaskID> task_ids;
-    IdGenerator<SectionID> section_ids;
+    IDGenerator<TaskID> task_ids;
+    IDGenerator<SectionID> section_ids;
     // DATA OWNED
     std::unordered_map<SectionID, Section, IDHash> sections;
     std::unordered_map<TaskID, Task, IDHash> tasks;
