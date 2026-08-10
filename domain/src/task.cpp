@@ -9,8 +9,11 @@ Task::Task(
         Priority priority,
         OptionalDate deadline,
         SectionID section
-    ) : id{id}, title{title}, description{description},
-        priority{priority}, deadline{deadline}, section{section} {}
+    ) : id{id}, title{std::move(title)}, description{std::move(description)},
+        priority{priority}, deadline {std::move(deadline)}, section{section} {
+            if (!valid_deadline(deadline))
+                throw std::invalid_argument("Invalid deadline");
+        }
 
 State::TaskReport Task::report_state() const {
     return {
@@ -21,5 +24,9 @@ State::TaskReport Task::report_state() const {
         deadline,
         section
     };
+}
+bool Task::valid_deadline(const OptionalDate& deadline) {
+    return !deadline || deadline->ok();
+    // its valid if it does not exist or if it's a valid date
 }
 } // namespace Domain

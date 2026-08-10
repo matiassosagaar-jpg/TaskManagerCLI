@@ -2,8 +2,10 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "ids.hpp"
 #include "types.hpp"
 namespace Domain::State
+
 {
 struct TaskReport {
     TaskID id;

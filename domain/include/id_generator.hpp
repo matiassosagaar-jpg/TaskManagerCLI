@@ -1,4 +1,4 @@
-#pragma once
+    #pragma once
 #include <cstdint>
 #include "ids.hpp"
 #include "state_report.hpp"

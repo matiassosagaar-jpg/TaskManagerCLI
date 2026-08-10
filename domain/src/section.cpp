@@ -3,7 +3,7 @@
 namespace Domain
 {
 Section::Section(std::string name, SectionID id) :
-    name{name}, id{id} {}
+    name{std::move(name)}, id{id} {}
 
 void Section::add_task(TaskID task) {
     tasks.emplace_back(task);

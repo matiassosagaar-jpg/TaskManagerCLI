@@ -4,11 +4,13 @@ using namespace Domain;
 #include "domain.hpp"
 #include <cassert>
 #include <iostream>
+#include  "json_schema.hpp"
 
-using namespace Domain;
 
-int main()
-{
+int main() {
+    // Task manager smoke test
+
+    using namespace Domain;
     TaskManager manager{};
 
     // Creating section
@@ -43,4 +45,6 @@ int main()
     manager.remove_section(section_id);
 
     std::cout << "Domain smoke test passed!\n";
+    
+    
 }
