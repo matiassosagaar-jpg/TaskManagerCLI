@@ -4,7 +4,7 @@ add_library(domain
     src/task_manager.cpp
 )
 target_link_libraries(domain
-    PRIVATE
+    PUBLIC
         json_schema
 )
 target_include_directories(domain PUBLIC

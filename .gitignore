@@ -10,6 +10,9 @@ build/
 *.a
 *.so
 /.vscode
+/root/
+/root.temp/
+/root.old/
 compile_commands.json
 cmake-build-*/
 CMakeCache.txt
