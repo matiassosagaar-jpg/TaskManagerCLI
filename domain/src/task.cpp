@@ -15,6 +15,16 @@ Task::Task(
                 throw std::invalid_argument("Invalid deadline");
         }
 
+Task Task::from_report(const State::TaskReport& report) {
+    return {
+        report.id,
+        report.title,
+        report.description,
+        report.priority,
+        report.deadline,
+        report.section
+    };
+}
 State::TaskReport Task::report_state() const {
     return {
         id,

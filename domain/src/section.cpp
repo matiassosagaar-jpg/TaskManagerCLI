@@ -19,4 +19,11 @@ State::SectionReport Section::report_state() const {
         tasks
     };
 }
+Section Section::from_report(const State::SectionReport& report) {
+    Section section(report.name, report.id);
+    for (const TaskID id : report.tasks) {
+        section.add_task(id);
+    }
+    return section;
+}
 } // namespace Domain

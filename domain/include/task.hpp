@@ -22,6 +22,7 @@ public:
         SectionID section = SectionID::none()
     );
     ~Task() = default; // data members already know how free their owned resources
+    static Task from_report(const State::TaskReport& report);
     void set_section(SectionID id) {section = id;}
     State::TaskReport report_state() const;
     // BASIC QUERIES

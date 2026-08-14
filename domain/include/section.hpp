@@ -19,6 +19,7 @@ public:
     bool contains_task(TaskID id) const {
         return std::find(tasks.begin(), tasks.end(), id) != tasks.end();
     }
+    static Section from_report(const State::SectionReport& report);
     private:
     std::string name;
     SectionID id;

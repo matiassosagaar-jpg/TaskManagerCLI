@@ -30,6 +30,7 @@ public:
     const Task& get_task(TaskID id) const {return tasks.at(id);}
     Section& get_section(SectionID id) {return sections.at(id);}
     State::ManagerFullReport report_state() const;
+    void load_state(State::ManagerFullReport report);
     //------------Interface--------------
 private:
     // ID GENERATORS
@@ -38,5 +39,23 @@ private:
     // DATA OWNED
     std::unordered_map<SectionID, Section, IDHash> sections;
     std::unordered_map<TaskID, Task, IDHash> tasks;
+
+    template<ID id, typename R, typename out>
+    requires requires(const R& r) {
+        requires std::same_as<
+        std::remove_cvref_t<decltype(r.id)>,id>;
+        { out::from_report(r) } -> std::same_as<out>;
+    }
+    static std::unordered_map<id, out, IDHash> build_data_from_report(
+        const std::vector<R>& reports_vec
+    ) {
+        std::unordered_map<id, out, IDHash> output_map;
+        for (const auto& rep : reports_vec) {
+            auto item = out::from_report(rep);
+            output_map.emplace(rep.id, item);
+        }
+
+        return output_map;
+    }
 };
 } // namespace Domain

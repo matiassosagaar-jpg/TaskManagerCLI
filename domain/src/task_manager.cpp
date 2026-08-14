@@ -83,4 +83,15 @@ State::ManagerFullReport TaskManager::report_state() const {
     };
 
 }
+
+void TaskManager::load_state(State::ManagerFullReport report) {
+    tasks = build_data_from_report<
+        TaskID, State::TaskReport, Task
+        >(report.task_reports);
+    sections = build_data_from_report<
+        SectionID, State::SectionReport, Section
+        >(report.section_reports);
+    task_ids.set_last_used(report.last_task_id.last_used);
+    section_ids.set_last_used(report.last_section_id.last_used);
+}
 } // namespace Domain
