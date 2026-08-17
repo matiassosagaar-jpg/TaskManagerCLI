@@ -39,4 +39,5 @@ private:
     static constexpr char date_format[] = "%F";
     static bool valid_deadline(const OptionalDate& deadline);
 };
+
 }

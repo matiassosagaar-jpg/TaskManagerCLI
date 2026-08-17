@@ -21,6 +21,10 @@ add_executable(file_manager_test
     tests/file_manager_test.cpp
 )
 
+add_executable(integration_test
+    tests/integration_test.cpp    
+)
+
 include(FetchContent)
 
 FetchContent_Declare(
@@ -43,5 +47,12 @@ target_link_libraries(serialization_test
 
 target_link_libraries(file_manager_test
     PRIVATE
+        file_management
+)
+
+target_link_libraries(integration_test
+    PRIVATE
+        domain
+        serialization
         file_management
 )

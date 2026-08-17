@@ -39,4 +39,6 @@ bool Task::valid_deadline(const OptionalDate& deadline) {
     return !deadline || deadline->ok();
     // its valid if it does not exist or if it's a valid date
 }
+
+
 } // namespace Domain

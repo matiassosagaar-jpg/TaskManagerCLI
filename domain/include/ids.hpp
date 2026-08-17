@@ -34,5 +34,10 @@ struct IDHash { // I don't know much about how hashes work, so I'll just use the
         return std::hash<uint64_t>{}(id.value);
     }
 };
+
+template <ID id>
+bool operator==(const id& id1, const id& id2) {
+    return id1.value == id2.value;
+}
 }
 

@@ -9,7 +9,7 @@ TaskID TaskManager::create_task(
         OptionalDate deadline,
         SectionID section
     ) {
-        if (sections.find(section) == sections.end()) // throwing if the section doesn't exist
+        if (!section.is_none() && sections.find(section) == sections.end()) // throwing if the section doesn't exist
             throw std::invalid_argument("Section does not exist.");
         // CREATING TASK
         TaskID id {task_ids.next()}; // will advance the generator by 1 and return the current id
@@ -19,7 +19,8 @@ TaskID TaskManager::create_task(
                 priority, deadline, section)
         );
         // ADDING TO SECTION
-        sections.at(section).add_task(id); // don't want to implicitly create sections
+        if (!section.is_none())
+            sections.at(section).add_task(id); // don't want to implicitly create sections
         return id;
     }
 void TaskManager::remove_task(TaskID id) {
